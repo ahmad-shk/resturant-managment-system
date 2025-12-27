@@ -1,7 +1,7 @@
 "use client"
-
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
+import axios from "axios"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,14 +19,17 @@ interface MenuItem {
 }
 
 const CATEGORIES = ["Appetizers", "Main Course", "Desserts", "Beverages"]
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL!
 
 export default function MenuItemsPage() {
   const [items, setItems] = useState<MenuItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
+
   const [showModal, setShowModal] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -34,10 +37,12 @@ export default function MenuItemsPage() {
     category: "Main Course",
     image: "",
   })
+
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [itemToDelete, setItemToDelete] = useState<MenuItem | null>(null)
 
+  /* ================= FETCH ITEMS ================= */
   useEffect(() => {
     fetchItems()
   }, [])
@@ -45,29 +50,87 @@ export default function MenuItemsPage() {
   const fetchItems = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch("/api/items")
-      const data = await response.json()
-      if (data.success) {
-        setItems(data.data || [])
-      }
-    } catch (error) {
-      console.error("Failed to fetch items:", error)
+      const res = await axios.get(`${API_BASE_URL}/all`)
+      const list = Array.isArray(res.data)
+        ? res.data
+        : res.data.data || []
+
+      const formatted = list.map((item: any) => ({
+        ...item,
+        id: item._id,
+      }))
+// console.log("log:::",list)
+      setItems(formatted)
+    } catch (err) {
+      console.error(err)
       toast.error("Failed to load menu items")
     } finally {
       setIsLoading(false)
     }
   }
 
+  /* ================= ADD / UPDATE ================= */
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!formData.name || !formData.price) {
+      toast.error("Name & price are required")
+      return
+    }
+
+    try {
+      setSubmitLoading(true)
+
+      const payload = {
+        ...formData,
+        price: Number(formData.price),
+      }
+
+      if (editingId) {
+        await axios.put(`${API_BASE_URL}/update/${editingId}`, payload)
+        toast.success("Item updated")
+      } else {
+        await axios.post(`${API_BASE_URL}/add`, payload)
+        toast.success("Item added")
+      }
+
+      handleCloseModal()
+      fetchItems()
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Something went wrong")
+    } finally {
+      setSubmitLoading(false)
+    }
+  }
+
+  /* ================= DELETE ================= */
+  const handleDeleteConfirm = async () => {
+    if (!itemToDelete) return
+
+    try {
+      setDeleteLoading(itemToDelete.id)
+      await axios.delete(`${API_BASE_URL}/delete/${itemToDelete.id}`)
+      toast.success("Item deleted")
+      fetchItems()
+      setDeleteDialogOpen(false)
+    } catch {
+      toast.error("Delete failed")
+    } finally {
+      setDeleteLoading(null)
+    }
+  }
+
+  /* ================= IMAGE ================= */
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string)
-        setFormData({ ...formData, image: reader.result as string })
-      }
-      reader.readAsDataURL(file)
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string)
+      setFormData({ ...formData, image: reader.result as string })
     }
+    reader.readAsDataURL(file)
   }
 
   const handleDeleteImage = () => {
@@ -75,78 +138,7 @@ export default function MenuItemsPage() {
     setFormData({ ...formData, image: "" })
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!formData.name || !formData.price) {
-      toast.error("Please fill in all required fields")
-      return
-    }
-
-    try {
-      setSubmitLoading(true)
-      const url = editingId ? `/api/items/${editingId}` : "/api/items"
-      const method = editingId ? "PUT" : "POST"
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          description: formData.description,
-          price: Number.parseFloat(formData.price),
-          category: formData.category,
-          image: formData.image,
-        }),
-      })
-
-      const data = await response.json()
-      if (data.success) {
-        toast.success(editingId ? "Item updated successfully!" : "Item added successfully!")
-        setShowModal(false)
-        setFormData({
-          name: "",
-          description: "",
-          price: "",
-          category: "Main Course",
-          image: "",
-        })
-        setImagePreview(null)
-        setEditingId(null)
-        await fetchItems()
-      } else {
-        toast.error(data.message || "Failed to save item")
-      }
-    } catch (error) {
-      console.error("Failed to save item:", error)
-      toast.error("Failed to save item. Please try again.")
-    } finally {
-      setSubmitLoading(false)
-    }
-  }
-
-  const handleDeleteConfirm = async () => {
-    if (!itemToDelete) return
-
-    try {
-      setDeleteLoading(itemToDelete.id)
-      const response = await fetch(`/api/items/${itemToDelete.id}`, { method: "DELETE" })
-      const data = await response.json()
-      if (data.success) {
-        toast.success("Item deleted successfully!")
-        await fetchItems()
-        setDeleteDialogOpen(false)
-        setItemToDelete(null)
-      } else {
-        toast.error(data.message || "Failed to delete item")
-      }
-    } catch (error) {
-      console.error("Failed to delete item:", error)
-      toast.error("Failed to delete item. Please try again.")
-    } finally {
-      setDeleteLoading(null)
-    }
-  }
-
+  /* ================= EDIT ================= */
   const handleEdit = (item: MenuItem) => {
     setFormData({
       name: item.name,
@@ -160,13 +152,9 @@ export default function MenuItemsPage() {
     setShowModal(true)
   }
 
-  const handleOpenDeleteDialog = (item: MenuItem) => {
-    setItemToDelete(item)
-    setDeleteDialogOpen(true)
-  }
-
   const handleCloseModal = () => {
     setShowModal(false)
+    setEditingId(null)
     setFormData({
       name: "",
       description: "",
@@ -175,20 +163,21 @@ export default function MenuItemsPage() {
       image: "",
     })
     setImagePreview(null)
-    setEditingId(null)
   }
 
+  const handleOpenDeleteDialog = (item: MenuItem) => {
+    setItemToDelete(item)
+    setDeleteDialogOpen(true)
+  }
+
+  /* ================= LOADING ================= */
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen p-4 sm:p-6">
-        <div className="text-center space-y-4">
-          <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 animate-spin text-blue-500 mx-auto" />
-          <p className="text-slate-300 text-sm sm:text-base">Loading menu items...</p>
-        </div>
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
       </div>
     )
   }
-
   return (
     <div className="space-y-3 sm:space-y-4 md:space-y-6 w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">

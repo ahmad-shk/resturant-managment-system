@@ -25,17 +25,8 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-slate-950 text-white antialiased overflow-x-hidden">
         <div className="flex min-h-screen w-full overflow-x-hidden">
-          {/* Sidebar - responsive mobile */}
-          <div className="hidden md:block">
-            <Sidebar />
-          </div>
+          <Sidebar />
 
-          {/* Mobile sidebar */}
-          <div className="md:hidden">
-            <Sidebar />
-          </div>
-
-          {/* Main content - responsive layout */}
           <div className="flex-1 flex flex-col w-full md:ml-64 min-w-0">
             <Header />
             <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 bg-slate-950 w-full min-w-0 overflow-x-hidden">
