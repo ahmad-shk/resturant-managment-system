@@ -10,7 +10,7 @@ function getFirebaseURL(path: string): string {
   const cleanPath = path.startsWith("/") ? path.slice(1) : path
   return `${firebaseConfig.databaseURL}/${cleanPath}.json`
 }
-
+//yahooooo
 // Initialize Firebase (REST API doesn't need initialization, just return success)
 export async function initializeFirebase() {
   if (typeof window === "undefined") {
