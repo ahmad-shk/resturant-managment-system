@@ -47,61 +47,83 @@ export default function MenuItemsPage() {
     fetchItems()
   }, [])
 
-  const fetchItems = async () => {
-    try {
-      setIsLoading(true)
-      const res = await axios.get(`${API_BASE_URL}/all`)
-      const list = Array.isArray(res.data)
-        ? res.data
-        : res.data.data || []
+ /* ================= FETCH ITEMS (Optimized) ================= */
+const fetchItems = async () => {
+  try {
+    setIsLoading(true);
+    // URL verify karne ke liye console
+    console.log("Fetching from:", `${API_BASE_URL}/all`);
+    
+    const res = await axios.get(`${API_BASE_URL}/all`);
+    
+    // Check karein ke data array hai ya object
+    const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
 
-      const formatted = list.map((item: any) => ({
-        ...item,
-        id: item._id,
-      }))
-// console.log("log:::",list)
-      setItems(formatted)
-    } catch (err) {
-      console.error(err)
-      toast.error("Failed to load menu items")
-    } finally {
-      setIsLoading(false)
+    const formatted = list.map((item: any) => ({
+      ...item,
+      id: item._id || item.id, // MongoDB ID handle karne ke liye
+    }));
+
+    setItems(formatted);
+  } catch (err: any) {
+    console.error("--- FETCH ERROR DETAILS ---");
+    if (err.response) {
+      // Server ne response diya par status 2xx nahi hai
+      console.error("Status:", err.response.status);
+      console.error("Data:", err.response.data);
+    } else if (err.request) {
+      // Request bheji gayi par response nahi mila (CORS ya Network issue)
+      console.error("No Response! Check CORS, Ad-blockers, or Server Logs.");
+    } else {
+      console.error("Error:", err.message);
     }
+    toast.error("Could not load items: " + (err.response?.data?.message || err.message));
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+/* ================= ADD / UPDATE (With Size Check) ================= */
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!formData.name || !formData.price || !formData.description) {
+    toast.error("Name, Price and Description are required");
+    return;
   }
 
-  /* ================= ADD / UPDATE ================= */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  try {
+    setSubmitLoading(true);
 
-    if (!formData.name || !formData.price) {
-      toast.error("Name & price are required")
-      return
+    // Payload tayyar karein
+    const payload = {
+      ...formData,
+      price: Number(formData.price),
+      isAvailable: true // Backend schema required hai
+    };
+
+    // Console payload for debugging
+    console.log("Submitting Payload:", payload);
+
+    if (editingId) {
+      await axios.put(`${API_BASE_URL}/update/${editingId}`, payload);
+      toast.success("Item updated successfully");
+    } else {
+      // Add API call
+      await axios.post(`${API_BASE_URL}/add`, payload);
+      toast.success("Item added successfully");
     }
 
-    try {
-      setSubmitLoading(true)
-
-      const payload = {
-        ...formData,
-        price: Number(formData.price),
-      }
-
-      if (editingId) {
-        await axios.put(`${API_BASE_URL}/update/${editingId}`, payload)
-        toast.success("Item updated")
-      } else {
-        await axios.post(`${API_BASE_URL}/add`, payload)
-        toast.success("Item added")
-      }
-
-      handleCloseModal()
-      fetchItems()
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Something went wrong")
-    } finally {
-      setSubmitLoading(false)
-    }
+    handleCloseModal();
+    fetchItems();
+  } catch (err: any) {
+    console.error("SUBMIT ERROR:", err.response?.data || err.message);
+    const serverMsg = err.response?.data?.message || "Check image size or network connection";
+    toast.error("Save Failed: " + serverMsg);
+  } finally {
+    setSubmitLoading(false);
   }
+};
 
   /* ================= DELETE ================= */
   const handleDeleteConfirm = async () => {
