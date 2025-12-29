@@ -19,19 +19,19 @@ export function Sidebar() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 md:hidden bg-slate-800 p-2.5 rounded-lg border border-slate-700 text-white hover:bg-slate-700 shadow-lg transition-all"
+        className="fixed top-4 left-4 z-50 md:hidden bg-orange-800 p-2.5 rounded-lg border border-orange-700 text-white hover:bg-orange-700 shadow-lg transition-all"
         aria-label="Toggle menu"
       >
         {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       <aside
-        className={`fixed left-0 top-0 h-full w-72 sm:w-80 md:w-64 bg-gradient-to-b from-slate-900 to-slate-950 border-r border-slate-800 p-4 sm:p-6 transition-transform duration-300 ease-in-out md:translate-x-0 z-40 ${
+        className={`fixed left-0 top-0 h-full w-72 sm:w-80 md:w-64 bg-gradient-to-b from-orange-950 via-slate-950 to-slate-950 border-r border-orange-900/30 p-4 sm:p-6 transition-transform duration-300 ease-in-out md:translate-x-0 z-40 ${
           isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
         }`}
       >
         <div className="mb-6 sm:mb-8 flex items-center gap-3 pt-14 md:pt-0">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-br from-orange-600 to-orange-700 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
             <UtensilsCrossed size={20} className="text-white sm:w-6 sm:h-6" />
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-white">RestroAdmin</h1>
@@ -49,8 +49,8 @@ export function Sidebar() {
                 onClick={() => setIsOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                   isActive
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                    : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                    ? "bg-orange-600 text-white shadow-lg shadow-orange-600/20"
+                    : "text-slate-400 hover:bg-orange-900/30 hover:text-white"
                 }`}
               >
                 <Icon size={20} className="flex-shrink-0" />
@@ -60,7 +60,7 @@ export function Sidebar() {
           })}
         </nav>
 
-        <div className="mt-8 sm:mt-12 pt-6 border-t border-slate-800">
+        <div className="mt-8 sm:mt-12 pt-6 border-t border-orange-900/30">
           <p className="text-xs text-slate-500 mb-2">Restaurant Admin System v1.0</p>
           <p className="text-xs text-slate-600">Firebase Integrated</p>
         </div>
