@@ -223,7 +223,7 @@ export default function MenuItemsPage() {
             <CardContent className="p-4 space-y-3">
               <div className="flex justify-between items-start">
                 <h3 className="font-bold text-white text-lg truncate">{item.name}</h3>
-                <span className="text-orange-500 font-bold">Rs {item.price}</span>
+                <span className="text-orange-500 font-bold">€ {item.price}</span>
               </div>
               <p className="text-slate-400 text-sm line-clamp-2">{item.description}</p>
               <div className="flex gap-2 pt-2">

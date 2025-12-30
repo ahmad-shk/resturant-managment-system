@@ -75,22 +75,6 @@ export default function OrdersPage() {
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">Order Management</h1>
           <p className="text-slate-400 text-xs sm:text-sm">Manage and track all incoming orders</p>
         </div>
-
-        <div className="bg-red-900/30 border border-red-700 rounded-lg p-4 sm:p-6 space-y-4">
-          <div className="text-center space-y-3">
-            <h2 className="text-lg sm:text-xl font-bold text-red-200">Firebase Connection Error</h2>
-            <p className="text-red-100 text-sm">{error}</p>
-          </div>
-
-          <div className="text-center space-y-2">
-            <p className="text-sm text-slate-300">Please check:</p>
-            <ol className="text-xs text-slate-400 space-y-1 text-left max-w-md mx-auto">
-              <li>1. All Firebase environment variables are set in the Vars section</li>
-              <li>2. Firebase Firestore rules allow read/write access</li>
-              <li>3. Your Firebase project is properly configured</li>
-            </ol>
-          </div>
-        </div>
       </div>
     )
   }
@@ -155,7 +139,7 @@ export default function OrdersPage() {
                       <span className="text-slate-300 truncate flex-1">
                         {item.quantity}x {item.name}
                       </span>
-                      <span className="text-slate-400 flex-shrink-0">${(item.price ?? 0).toFixed(2)}</span>
+                      <span className="text-slate-400 flex-shrink-0">€{(item.price ?? 0).toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
@@ -163,7 +147,9 @@ export default function OrdersPage() {
                 {/* Total */}
                 <div className="pt-3 border-t border-slate-700 flex justify-between font-bold">
                   <span className="text-sm sm:text-base text-white">Total</span>
-                  <span className="text-base sm:text-lg text-green-400">${(order.total ?? 0).toFixed(2)}</span>
+                  <span className="text-base sm:text-lg text-green-400">
+                    €{(order.items.reduce((acc, item) => acc + (item.price * item.quantity), 0)).toFixed(2)}
+                  </span>
                 </div>
 
                 {/* Status Actions */}

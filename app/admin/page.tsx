@@ -185,7 +185,7 @@ export default function AdminDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl sm:text-3xl font-bold text-green-400">${analytics.totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-green-400">€{analytics.totalRevenue.toFixed(2)}</div>
             <p className="text-xs text-slate-500 mt-1">From {analytics.totalOrders} orders</p>
           </CardContent>
         </Card>
@@ -216,7 +216,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl sm:text-3xl font-bold text-purple-400">
-              ${analytics.averageOrderValue.toFixed(2)}
+              €{analytics.averageOrderValue.toFixed(2)}
             </div>
             <p className="text-xs text-slate-500 mt-1">Per order value</p>
           </CardContent>
@@ -269,7 +269,7 @@ export default function AdminDashboard() {
                   labelStyle={{ color: "#e2e8f0" }}
                 />
                 <Legend wrapperStyle={{ fontSize: "11px" }} />
-                <Line type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={2} name="Revenue ($)" />
+                <Line type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={2} name="Revenue (€)" />
                 <Line type="monotone" dataKey="orders" stroke="#3b82f6" strokeWidth={2} name="Orders" />
               </LineChart>
             </ResponsiveContainer>
@@ -345,7 +345,7 @@ export default function AdminDashboard() {
                 />
                 <Legend wrapperStyle={{ fontSize: "11px" }} />
                 <Bar dataKey="count" fill="#f97316" name="Quantity Sold" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="revenue" fill="#10b981" name="Revenue ($)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="revenue" fill="#10b981" name="Revenue (€)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -376,10 +376,10 @@ export default function AdminDashboard() {
                       <td className="py-3 px-3 sm:px-4 text-white font-medium">{item.name}</td>
                       <td className="py-3 px-3 sm:px-4 text-right text-blue-400 font-semibold">{item.count}</td>
                       <td className="py-3 px-3 sm:px-4 text-right text-green-400 font-semibold">
-                        ${item.revenue.toFixed(2)}
+                        €{item.revenue.toFixed(2)}
                       </td>
                       <td className="py-3 px-3 sm:px-4 text-right text-slate-300">
-                        ${(item.revenue / item.count).toFixed(2)}
+                        €{(item.revenue / item.count).toFixed(2)}
                       </td>
                     </tr>
                   ))}
