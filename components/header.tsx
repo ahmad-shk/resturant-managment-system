@@ -18,38 +18,44 @@ export function Header() {
   }
 
   return (
-    <header className="bg-gradient-to-r from-slate-900 to-slate-800 border-b border-slate-700 sticky top-0 z-50 w-full shadow-lg">
+    // Tabdeeli: z-index ko z-40 kiya taake Sidebar (jo aksar z-50 hota hai) iske upar aaye
+    <header className="bg-gradient-to-r from-slate-900 to-slate-800 border-b border-slate-700 sticky top-0 z-40 w-full shadow-lg">
       <div className="px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
-        <div className="flex items-center justify-between gap-2 sm:gap-4">
-          <div className="min-w-0 flex-1">
-            <h2 className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-white truncate">
+        {/* Mobile Layout Fix: flex-nowrap aur items-center */}
+        <div className="flex items-center justify-between gap-2">
+          
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <h2 className="text-base sm:text-xl md:text-2xl font-bold text-white truncate">
               {getPageTitle()}
             </h2>
-            <p className="text-slate-400 text-[10px] sm:text-sm mt-0.5 hidden sm:block">
-              Real-time restaurant management system
+            {/* Mobile pe sub-text chota aur saaf dikhega */}
+            <p className="text-slate-400 text-[10px] sm:text-sm mt-0.5 hidden xs:block truncate">
+              Real-time management
             </p>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            <div className="flex gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+            {/* Language Switcher container */}
+            <div className="flex items-center bg-slate-800/50 p-1 rounded-lg border border-slate-700">
               <Button
                 onClick={() => setLanguage("en")}
-                variant={language === "en" ? "default" : "outline"}
+                variant={language === "en" ? "default" : "ghost"}
                 size="sm"
-                className="h-7 sm:h-8 px-2 sm:px-3 text-[10px] sm:text-sm min-w-[36px] sm:min-w-[44px]"
+                className={`h-7 px-2 text-[10px] sm:text-xs ${language === 'en' ? 'bg-blue-600' : 'text-slate-400'}`}
               >
                 EN
               </Button>
               <Button
                 onClick={() => setLanguage("zh")}
-                variant={language === "zh" ? "default" : "outline"}
+                variant={language === "zh" ? "default" : "ghost"}
                 size="sm"
-                className="h-7 sm:h-8 px-2 sm:px-3 text-[10px] sm:text-sm min-w-[36px] sm:min-w-[44px]"
+                className={`h-7 px-2 text-[10px] sm:text-xs ${language === 'zh' ? 'bg-blue-600' : 'text-slate-400'}`}
               >
                 中文
               </Button>
             </div>
           </div>
+
         </div>
       </div>
     </header>

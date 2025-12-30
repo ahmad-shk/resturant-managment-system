@@ -17,16 +17,18 @@ export function Sidebar() {
 
   return (
     <>
+      {/* Menu Toggle Button - Iska Z-index sabse zyada (100) hona chahiye */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 md:hidden bg-orange-800 p-2.5 rounded-lg border border-orange-700 text-white hover:bg-orange-700 shadow-lg transition-all"
+        className="fixed top-3 left-3 z-[100] md:hidden bg-orange-600 p-2.5 rounded-lg border border-orange-500 text-white hover:bg-orange-700 shadow-lg transition-all"
         aria-label="Toggle menu"
       >
-        {isOpen ? <X size={20} /> : <Menu size={20} />}
+        {isOpen ? <X size={22} /> : <Menu size={22} />}
       </button>
 
+      {/* Sidebar - Iska Z-index (90) Header se zyada hona chahiye */}
       <aside
-        className={`fixed left-0 top-0 h-full w-72 sm:w-80 md:w-64 bg-gradient-to-b from-orange-950 via-slate-950 to-slate-950 border-r border-orange-900/30 p-4 sm:p-6 transition-transform duration-300 ease-in-out md:translate-x-0 z-40 ${
+        className={`fixed left-0 top-0 h-full w-72 sm:w-80 md:w-64 bg-gradient-to-b from-orange-950 via-slate-950 to-slate-950 border-r border-orange-900/30 p-4 sm:p-6 transition-transform duration-300 ease-in-out md:translate-x-0 z-[90] ${
           isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
         }`}
       >
@@ -66,10 +68,11 @@ export function Sidebar() {
         </div>
       </aside>
 
+      {/* Overlay/Backdrop - Iska Z-index (80) Sidebar se kam aur Header se zyada */}
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-30 md:hidden transition-opacity"
+          className="fixed inset-0 bg-black/80 backdrop-blur-md z-[80] md:hidden transition-opacity"
         />
       )}
     </>
